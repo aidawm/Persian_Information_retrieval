@@ -23,8 +23,7 @@ for i in range(10):
 
     
     tokens = tokenizer.simple_tokenizer(text)
-    tokens = tokenizer.process_verbs(tokens)
-    text = normalizer.normalize_tokens(tokens)
+    tokens = normalizer.normalize_tokens(tokens)
     with open(f'token_text{i}.txt', 'w') as f:
         for line in tokens:
             f.write(f"{line}\n")

@@ -9,8 +9,30 @@ class Normalizer:
 
         for p in self.punctuations:
             token = token.replace(p,"")
-
         return token
+    
+    def delete_useless_tokens(self,tokens:list[str]):
+
+        del_index = []
+        useless_tokens = ["ی","ای"]
+        print ( tokens) 
+        for i,t in enumerate(tokens):
+            if (t in useless_tokens):
+                del_index.append(i)
+            
+            if t == "های" or t=="هایی": 
+                tokens[i] = "ها"
+            if t == "تری": 
+                tokens[i] = "تر"
+            if t == "ترینی": 
+                tokens[i] = "ترین"
+            if t == "های" or t=="هایی": 
+                tokens[i] = "ها"
+        
+        for i in range(len(del_index)-1,-1,-1):
+            print(tokens)
+            tokens.pop(del_index[i])
+
     
     def normalize_alphabets(self,token:str):
         for d in self.diacritics:
@@ -43,8 +65,38 @@ class Normalizer:
         
 
     def normalize_tokens(self,tokens:list[str]):
-         for i,t in enumerate(tokens):
+        for i,t in enumerate(tokens):
             tokens[i] = self.delete_punctuations_symbols(tokens[i])
             tokens[i] = self.normalize_alphabets(tokens[i])
             tokens[i] = self.normalize_numbers(tokens[i])
+        
+        tokens = self.process_verbs(tokens)
+        tokens = self.process_nouns(tokens)
+        return tokens
 
+
+    def process_verbs(self,tokens: list[str]):
+        return self.correct_spacing(tokens,["می","نمی"],before_word=True)
+
+    
+    def process_nouns(self,tokens: list[str]):
+        self.delete_useless_tokens(tokens)
+        return self.correct_spacing(tokens,["ها","تر","ترین","گر","گری","ام","ات","اش"],before_word=False)
+
+    def correct_spacing(self,tokens:list[str],list_of_corrections,before_word=True):
+        del_index = []
+        for i,t in enumerate(tokens):
+            if t in list_of_corrections: 
+                if(before_word):
+                    t = t+ "\u200c"
+                    tokens[i+1] = t+ tokens[i+1]
+                else:
+                    a = tokens[i-1]+ "\u200c"
+                    tokens[i-1] = a+t
+
+                del_index.append(i)
+
+        for i in range(len(del_index)-1,-1,-1):
+            tokens.pop(del_index[i])
+        
+        return tokens
