@@ -15,7 +15,6 @@ class Normalizer:
 
         del_index = []
         useless_tokens = ["ی","ای"]
-        print ( tokens) 
         for i,t in enumerate(tokens):
             if (t in useless_tokens):
                 del_index.append(i)
@@ -30,7 +29,6 @@ class Normalizer:
                 tokens[i] = "ها"
         
         for i in range(len(del_index)-1,-1,-1):
-            print(tokens)
             tokens.pop(del_index[i])
 
     
