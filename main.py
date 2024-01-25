@@ -1,5 +1,6 @@
 from index_tokens import Indexer
 import json
+import time
 
 class IR: 
     def index_tokens(self):
@@ -19,6 +20,10 @@ class IR:
 
 
 if __name__ == '__main__': 
+    start_time = time.time()
     ir = IR()
     ir.index_tokens()
     ir.save_dictionary()
+    end_time = time.time()
+    
+    print(f"process time : {end_time - start_time}")

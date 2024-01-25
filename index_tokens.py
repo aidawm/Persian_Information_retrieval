@@ -25,28 +25,36 @@ class Indexer:
         self.eliminated_words = [l.replace("\n","").split("\t")[0] for l in self.eliminated_words]
 
     def create_posting_list(self,tokens: list[str], docID):
+
         count = 0 
         for t in tokens : 
             if (t in self.eliminated_words or t == ""):
                 continue
             if t in self.IR_dictionary.keys():
                 if(not docID in self.IR_dictionary[t]["docs"].keys()):
-                    self.IR_dictionary[t]["docs"][docID]= list()
-                self.IR_dictionary[t]["docs"][docID].append(count)
+                    self.IR_dictionary[t]["docs"][docID]= dict()
+                    self.IR_dictionary[t]["docs"][docID]["positions"]= list()
+                    self.IR_dictionary[t]["docs"][docID]["term_frequency"]= 0
             else:
                 self.IR_dictionary[t] = dict()
                 self.IR_dictionary[t]["docs"] = dict()
-                self.IR_dictionary[t]["docs"][docID]= list()
-                self.IR_dictionary[t]["docs"][docID].append(count)
+                self.IR_dictionary[t]["docs"][docID]= dict()
+                self.IR_dictionary[t]["docs"][docID]["positions"]= list()
+                self.IR_dictionary[t]["docs"][docID]["term_frequency"]= 0
+
+            self.IR_dictionary[t]["docs"][docID]["positions"].append(count)
+            self.IR_dictionary[t]["docs"][docID]["term_frequency"] += 1
             
             count +=1
+        
+
 
     def tokenize_docs(self):
             data_address = "IR_data_news_12k.json"
             f = open(data_address)
             json_file = json.load(f)
-            # self.doc_numbers = len(json_file)
-            self.doc_numbers = 10
+            self.doc_numbers = len(json_file)
+            # self.doc_numbers = 10
 
             for i in range(self.doc_numbers):
             
@@ -65,6 +73,7 @@ class Indexer:
 
                 else: 
                     self.create_posting_list(tokens,i)
+                    self.IR_dictionary[t]["doc_frequency"] = len(self.IR_dictionary[t]["docs"].keys)
 
             if(self.save_most_frequent_words):
                 self.freq_term.find_most_freq_terms()
