@@ -73,7 +73,7 @@ class Indexer:
 
                 else: 
                     self.create_posting_list(tokens,i)
-                    self.IR_dictionary[t]["doc_frequency"] = len(self.IR_dictionary[t]["docs"].keys)
+
 
             if(self.save_most_frequent_words):
                 self.freq_term.find_most_freq_terms()
@@ -81,6 +81,9 @@ class Indexer:
                 for i in range(self.doc_numbers):
                     self.create_posting_list(self.doc_tocken_list[i],i)
                     del self.doc_tocken_list[i]
+
+            for t in self.IR_dictionary.keys():
+                self.IR_dictionary[t]["doc_frequency"] = len(self.IR_dictionary[t]["docs"].keys())
 
 
     def get_indexes(self):
