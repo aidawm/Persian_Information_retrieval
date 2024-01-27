@@ -28,8 +28,7 @@ class Indexer:
 
         count = 0 
         for t in tokens : 
-            if (t in self.eliminated_words or t == ""):
-                continue
+
             if t in self.IR_dictionary.keys():
                 if(not docID in self.IR_dictionary[t]["docs"].keys()):
                     self.IR_dictionary[t]["docs"][docID]= dict()
@@ -48,6 +47,18 @@ class Indexer:
             count +=1
         
 
+    def tokenize_text(self, text):
+
+        tokens = self.tokenizer.simple_tokenizer(text)
+        tokens = self.normalizer.normalize_tokens(tokens)
+
+                
+        tokens = [self.stemmer.convert_to_stem(t) for t in tokens]
+
+        if not self.save_most_frequent_words:
+            tokens = [ t for t in tokens if not (t in self.eliminated_words or t == "")]
+        
+        return tokens
 
     def tokenize_docs(self):
             data_address = "IR_data_news_12k.json"
@@ -60,13 +71,8 @@ class Indexer:
             
                 text = json_file[str(i)]["content"]
 
-
-                tokens = self.tokenizer.simple_tokenizer(text)
-                tokens = self.normalizer.normalize_tokens(tokens)
-
+                tokens = self.tokenize_text(text)
                 
-                tokens = [self.stemmer.convert_to_stem(t) for t in tokens]
-
                 if (self.save_most_frequent_words):
                     self.freq_term.count_terms(tokens)
                     self.doc_tocken_list[i]= tokens
@@ -79,9 +85,9 @@ class Indexer:
                 self.freq_term.find_most_freq_terms()
                 self.get_eliminate_words()
                 for i in range(self.doc_numbers):
-                    self.create_posting_list(self.doc_tocken_list[i],i)
+                    tokens = [ t for t in self.doc_tocken_list[i] if not (t in self.eliminated_words or t == "")]
+                    self.create_posting_list(tokens,i)
                     del self.doc_tocken_list[i]
-
             for t in self.IR_dictionary.keys():
                 self.IR_dictionary[t]["doc_frequency"] = len(self.IR_dictionary[t]["docs"].keys())
 
