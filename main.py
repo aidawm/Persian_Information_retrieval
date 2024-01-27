@@ -91,5 +91,5 @@ if __name__ == '__main__':
     # ir.answer_to_queries()
     # ir.index_tokens()
     # ir.calculate_tf_idf()
-    ir.save_dictionary()
+    # ir.save_dictionary()
     # end_time = time.time()
