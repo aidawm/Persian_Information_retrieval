@@ -3,6 +3,8 @@ from word_tokenizer import WordTokenizer
 from word_normalizer import Normalizer
 from parsivar import FindStems
 from term_frequency import MostFrequences
+import math
+
 
 class Indexer:
     def __init__(self,save_most_frequent_words = False) -> None:
@@ -47,7 +49,7 @@ class Indexer:
             count +=1
         
 
-    def tokenize_text(self, text):
+    def tokenize_text(self, text , is_indexing= False):
 
         tokens = self.tokenizer.simple_tokenizer(text)
         tokens = self.normalizer.normalize_tokens(tokens)
@@ -55,7 +57,7 @@ class Indexer:
                 
         tokens = [self.stemmer.convert_to_stem(t) for t in tokens]
 
-        if not self.save_most_frequent_words:
+        if not is_indexing:
             tokens = [ t for t in tokens if not (t in self.eliminated_words or t == "")]
         
         return tokens
@@ -68,29 +70,71 @@ class Indexer:
             # self.doc_numbers = 10
 
             for i in range(self.doc_numbers):
+                if i%1000 == 1: 
+                    print (f"process doc {i}\n")
             
                 text = json_file[str(i)]["content"]
 
-                tokens = self.tokenize_text(text)
+                
                 
                 if (self.save_most_frequent_words):
+                    tokens = self.tokenize_text(text,True)
                     self.freq_term.count_terms(tokens)
-                    self.doc_tocken_list[i]= tokens
+                    self.doc_tocken_list[str(i)]= tokens
 
                 else: 
+                    tokens = self.tokenize_text(text)
                     self.create_posting_list(tokens,i)
+                    
 
 
             if(self.save_most_frequent_words):
                 self.freq_term.find_most_freq_terms()
                 self.get_eliminate_words()
                 for i in range(self.doc_numbers):
-                    tokens = [ t for t in self.doc_tocken_list[i] if not (t in self.eliminated_words or t == "")]
-                    self.create_posting_list(tokens,i)
-                    del self.doc_tocken_list[i]
+                    tokens = [ t for t in self.doc_tocken_list[str(i)] if not (t in self.eliminated_words or t == "")]
+                    self.create_posting_list(tokens,str(i))
+                    del self.doc_tocken_list[str(i)]
             for t in self.IR_dictionary.keys():
                 self.IR_dictionary[t]["doc_frequency"] = len(self.IR_dictionary[t]["docs"].keys())
+
+            print("calculate tf-idfs\n")
+            self.calculate_tf_idf()
+            self.calculate_doc_vector_normalization()
+
+            # normalize tf_idfs 
+
+            for t in self.IR_dictionary.keys():
+                for d in self.IR_dictionary[t]["docs"].keys():
+                    self.IR_dictionary[t]["docs"][d]["tf-idf"] = self.IR_dictionary[t]["docs"][d]["tf-idf"] / self.normalization_vector_docs[d]
+
+
 
 
     def get_indexes(self):
         return self.IR_dictionary
+    
+
+    def calculate_tf_idf(self):
+        for t in self.IR_dictionary.keys():
+            n_t = self.IR_dictionary[t]["doc_frequency"]
+            for d in self.IR_dictionary[t]["docs"].keys():
+                f_td = self.IR_dictionary[t]["docs"][d]["term_frequency"]
+                self.IR_dictionary[t]["docs"][d]["tf-idf"] = (1+math.log(f_td,10))*math.log(self.doc_numbers/n_t)
+
+
+    def calculate_doc_vector_normalization (self):
+        self.normalization_vector_docs = dict()
+
+        for t in self.IR_dictionary.keys():
+            for d in self.IR_dictionary[t]["docs"].keys():
+                if (not d in self.normalization_vector_docs.keys()):
+                    self.normalization_vector_docs[d] = 0
+                term_frequency = self.IR_dictionary[t]["docs"][d]["term_frequency"]
+                tf_idf = self.IR_dictionary[t]["docs"][d]["tf-idf"]
+                self.normalization_vector_docs[d] +=  term_frequency * (tf_idf **2)
+
+        self.normalization_vector_docs = {d:self.normalization_vector_docs[d]**0.5 for d in self.normalization_vector_docs.keys() }
+
+    
+        

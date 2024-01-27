@@ -5,15 +5,12 @@ import math
 
 
 class IR: 
-    def __init__(self) -> None:
-        self.N = 12202 
-        self.indexer = Indexer(False)
 
     def index_tokens(self):
         self.indexer = Indexer(True)
         self.indexer.tokenize_docs()
         self.IR_dictionary = self.indexer.get_indexes()
-        print(self.IR_dictionary["ساعت"])
+        # print(self.IR_dictionary["ساعت"])
 
     def save_dictionary(self):
         
@@ -22,17 +19,13 @@ class IR:
         f.write(json_dic)
 
     def load_dictionary(self): 
+        self.indexer = Indexer(False)
         data_address = "dict.json"
         f = open(data_address)
         self.IR_dictionary = json.load(f)
         
     
-    def calculate_tf_idf(self):
-        for t in self.IR_dictionary.keys():
-            n_t = self.IR_dictionary[t]["doc_frequency"]
-            for d in self.IR_dictionary[t]["docs"].keys():
-                f_td = self.IR_dictionary[t]["docs"][d]["term_frequency"]
-                self.IR_dictionary[t]["docs"][d]["tf-idf"] = (1+math.log(f_td,10))*math.log(self.N/n_t)
+    
 
     def find_suitable_docs(self,tokens):
         docs_dict = dict()
@@ -57,7 +50,7 @@ class IR:
             dict_query[t]+=1
 
         tf_idf_query = {t:1+math.log(dict_query[t],10) for t in dict_query.keys()}
-
+        print(tokens)
         docs = self.find_suitable_docs(set(tokens))
         docs_score = dict()
         for d in docs :
@@ -88,13 +81,15 @@ if __name__ == '__main__':
     # start_time = time.time()
     
     ir = IR()
-    ir.load_dictionary()
+    ir.index_tokens()
+    # ir.load_dictionary()
+    ir.save_dictionary()
 
-    ir.answer_query("فدراسیون فوتبال در تهران ")
+    ir.answer_query("قهرمانی تیم ملی ایران")
 
 
     # ir.answer_to_queries()
     # ir.index_tokens()
     # ir.calculate_tf_idf()
-    # ir.save_dictionary()
+    ir.save_dictionary()
     # end_time = time.time()
