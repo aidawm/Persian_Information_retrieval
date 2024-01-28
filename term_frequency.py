@@ -4,6 +4,7 @@ class MostFrequences :
         self.term_dictionary = {}
 
     def count_terms(self,tokens):
+        tokens = set(tokens)
         for t in tokens:
             if t == "":
                  continue

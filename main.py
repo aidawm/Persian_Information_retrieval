@@ -5,11 +5,17 @@ import math
 
 
 class IR: 
+    def __init__(self,en_champion_list) -> None:
+        self.enable_champion_list = en_champion_list
 
     def index_tokens(self):
         self.indexer = Indexer(True)
         self.indexer.tokenize_docs()
         self.IR_dictionary = self.indexer.get_indexes()
+        if self.enable_champion_list :
+            self.indexer.generate_champion_list(20)
+            self.champion_list= self.indexer.get_champion_list()
+        
         # print(self.IR_dictionary["ساعت"])
 
     def save_dictionary(self):
@@ -17,23 +23,35 @@ class IR:
         json_dic = json.dumps(self.IR_dictionary)
         f = open("dict.json","w")
         f.write(json_dic)
+        print(type(self.champion_list))
+        ch_json = json.dumps(self.champion_list)
+        f = open("champions.json","w")
+        f.write(ch_json)
 
     def load_dictionary(self): 
         self.indexer = Indexer(False)
         data_address = "dict.json"
         f = open(data_address)
         self.IR_dictionary = json.load(f)
+        if self.enable_champion_list:
+            champion_address = "champions.json"
+            f = open(data_address)
+            self.champion_list = json.load(f)
         
-    
-    
 
     def find_suitable_docs(self,tokens):
         docs_dict = dict()
         for t in tokens:
-            for d in self.IR_dictionary[t]["docs"].keys():
-                if not d in docs_dict.keys():
-                    docs_dict[d] = dict()
-                docs_dict[d][t] = float(self.IR_dictionary[t]["docs"][d]["tf-idf"])
+                for d in self.champion_list[t]:
+                    if not d in docs_dict.keys():
+                        docs_dict[d] = dict()
+                    docs_dict[d][t] = float(self.champion_list[t][d])
+        else:
+            for t in tokens:
+                for d in self.IR_dictionary[t]["docs"].keys():
+                    if not d in docs_dict.keys():
+                        docs_dict[d] = dict()
+                    docs_dict[d][t] = float(self.IR_dictionary[t]["docs"][d]["tf-idf"])
 
         return docs_dict 
 
@@ -51,6 +69,7 @@ class IR:
 
         tf_idf_query = {t:1+math.log(dict_query[t],10) for t in dict_query.keys()}
         print(tokens)
+
         docs = self.find_suitable_docs(set(tokens))
         docs_score = dict()
         for d in docs :
@@ -80,7 +99,7 @@ class IR:
 if __name__ == '__main__': 
     # start_time = time.time()
     
-    ir = IR()
+    ir = IR(True)
     ir.index_tokens()
     # ir.load_dictionary()
     ir.save_dictionary()

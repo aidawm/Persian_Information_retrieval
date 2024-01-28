@@ -136,5 +136,23 @@ class Indexer:
 
         self.normalization_vector_docs = {d:self.normalization_vector_docs[d]**0.5 for d in self.normalization_vector_docs.keys() }
 
+
+
+    def generate_champion_list(self,k):
+        self.champion_list = dict()
+        for t in self.IR_dictionary.keys():
+            docs = {str(d):self.IR_dictionary[t]["docs"][d]["tf-idf"] for d in self.IR_dictionary[t]["docs"].keys()}
+            sorted_docs = sorted(docs.items(), key=lambda x:x[1], reverse=True)
+            if k >= len(docs):
+                sorted_docs = sorted_docs[0:k]
+            else: 
+                sorted_docs = sorted_docs[0:len(docs)]
+            
+            self.champion_list[t] = dict(sorted_docs)
+
+    def get_champion_list(self):
+        return self.champion_list
+
+
     
         
