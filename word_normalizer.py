@@ -1,15 +1,11 @@
 class Normalizer:
     def __init__(self):
-        self. punctuations = [".","،",",","!","?","\"","\'","(",")","{","}","[","]","/","\\",";","؛","»","«",">","<",":"]
+        
         f = open("diacritics.txt", 'r')
         self.diacritics = f.readlines()
         self.diacritics = [t.replace("\n","") for t in self.diacritics]
 
-    def delete_punctuations_symbols(self,token:str):
-
-        for p in self.punctuations:
-            token = token.replace(p,"")
-        return token
+    
     
     def delete_useless_tokens(self,tokens:list[str]):
 
@@ -64,7 +60,7 @@ class Normalizer:
 
     def normalize_tokens(self,tokens:list[str]):
         for i,t in enumerate(tokens):
-            tokens[i] = self.delete_punctuations_symbols(tokens[i])
+            # tokens[i] = self.delete_punctuations_symbols(tokens[i])
             tokens[i] = self.normalize_alphabets(tokens[i])
             tokens[i] = self.normalize_numbers(tokens[i])
         

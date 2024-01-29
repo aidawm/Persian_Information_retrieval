@@ -51,7 +51,7 @@ class Indexer:
 
     def tokenize_text(self, text , is_indexing= False):
 
-        tokens = self.tokenizer.simple_tokenizer(text)
+        tokens = self.tokenizer.tokenize(text)
         tokens = self.normalizer.normalize_tokens(tokens)
 
                 
