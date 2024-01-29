@@ -23,7 +23,6 @@ class IR:
         json_dic = json.dumps(self.IR_dictionary)
         f = open("dict.json","w")
         f.write(json_dic)
-        print(type(self.champion_list))
         ch_json = json.dumps(self.champion_list)
         f = open("champions.json","w")
         f.write(ch_json)
@@ -35,7 +34,7 @@ class IR:
         self.IR_dictionary = json.load(f)
         if self.enable_champion_list:
             champion_address = "champions.json"
-            f = open(data_address)
+            f = open(champion_address)
             self.champion_list = json.load(f)
         
 
@@ -87,8 +86,9 @@ class IR:
         
         with open(f'test.txt', 'w') as f:
             for d in best_docs.keys():      
-                text = json_file[d]["content"]  
-                f.write(f"{text}\n")
+                title = json_file[d]["title"]  
+                link = json_file [d]["url"]
+                f.write(f"{title}\t{link}")
                 f.write("--------------------------------------------------\n")
 
         
@@ -100,9 +100,9 @@ if __name__ == '__main__':
     # start_time = time.time()
     
     ir = IR(True)
-    ir.index_tokens()
-    # ir.load_dictionary()
-    ir.save_dictionary()
+    # ir.index_tokens()
+    ir.load_dictionary()
+    # ir.save_dictionary()
 
     ir.answer_query("قهرمانی تیم ملی ایران")
 
