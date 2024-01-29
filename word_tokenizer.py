@@ -8,6 +8,18 @@ class WordTokenizer:
             text = text.replace(p," ")
         return text
     
+    def isAlphaOrNum(self,c):
+        if (c >= "a" and c <="z"):
+            return True
+        
+        if (c >= "A" and c <="Z"):
+            return True
+        
+        if (c >= "0" and c <="9"):
+            return True
+        
+        return False
+
     def tokenize(self,text:str):    
 
         text = text.replace("\t", " ")
@@ -22,13 +34,10 @@ class WordTokenizer:
 
             dot_index = text.find(".",last_dot_index+1)
             last_dot_index = dot_index
-
-            if(text[dot_index-1]>= "0" and text[dot_index+1]<="9"):
-                continue
-            elif ((text[dot_index-1]>= "a" and text[dot_index+1]<="z") or (text[dot_index-1]>= "A" and text[dot_index+1]<="Z")):
+            
+            if (self.isAlphaOrNum(text_list[dot_index-1]) and self.isAlphaOrNum(text_list[dot_index+1])):
                 continue
             else: 
-                
                 text_list[dot_index] = " "
 
         
