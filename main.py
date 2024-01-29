@@ -7,6 +7,9 @@ import math
 class IR: 
     def __init__(self,en_champion_list) -> None:
         self.enable_champion_list = en_champion_list
+        data_address = "IR_data_news_5k 2.json"
+        f = open(data_address)
+        self.json_file = json.load(f)
 
     def index_tokens(self):
         self.indexer = Indexer(True)
@@ -28,6 +31,7 @@ class IR:
         f.write(ch_json)
 
     def load_dictionary(self): 
+        print ("setup search engine!")
         self.indexer = Indexer(False)
         data_address = "dict.json"
         f = open(data_address)
@@ -79,20 +83,24 @@ class IR:
         
         sorted_docs = sorted(docs_score.items(), key=lambda x:x[1], reverse=True)[:10]
         best_docs = dict(sorted_docs)
-        data_address = "IR_data_news_5k 2.json"
-        f = open(data_address)
-        json_file = json.load(f)
+        
 
         
-        with open(f'test.txt', 'w') as f:
+        with open(f'{query}.txt', 'w') as f:
             for d in best_docs.keys():      
-                title = json_file[d]["title"]  
-                link = json_file [d]["url"]
-                f.write(f"{title}\t{link}")
+                title = self.json_file[d]["title"]  
+                link = self.json_file [d]["url"]
+                f.write(f"score: {best_docs[d]} - doc : {title}\t{link}")
                 f.write("--------------------------------------------------\n")
 
         
-
+    def get_queries(self):
+        while True:
+            print("enter your query : \t")
+            query = input()
+            if (query == "exit"):
+                break
+            self.answer_query(query)
         
 
 
@@ -104,8 +112,8 @@ if __name__ == '__main__':
     ir.load_dictionary()
     # ir.save_dictionary()
 
-    ir.answer_query("قهرمانی تیم ملی ایران")
-
+    ir.get_queries()
+    
 
     # ir.answer_to_queries()
     # ir.index_tokens()
