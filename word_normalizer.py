@@ -41,6 +41,10 @@ class Normalizer:
         token = token.replace("ة","ه")
         token = token.replace("ك","ک")
 
+        token = token.lower()
+
+        
+
         return token
     
     def normalize_numbers(self,token:str):
@@ -60,7 +64,6 @@ class Normalizer:
 
     def normalize_tokens(self,tokens:list[str]):
         for i,t in enumerate(tokens):
-            # tokens[i] = self.delete_punctuations_symbols(tokens[i])
             tokens[i] = self.normalize_alphabets(tokens[i])
             tokens[i] = self.normalize_numbers(tokens[i])
         
