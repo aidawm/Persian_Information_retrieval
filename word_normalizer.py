@@ -66,7 +66,7 @@ class Normalizer:
         for i,t in enumerate(tokens):
             tokens[i] = self.normalize_alphabets(tokens[i])
             tokens[i] = self.normalize_numbers(tokens[i])
-        
+            tokens[i] = self.normalize_multiform_words(tokens[i])
         tokens = self.process_verbs(tokens)
         tokens = self.process_nouns(tokens)
         return tokens
@@ -97,3 +97,18 @@ class Normalizer:
             tokens.pop(del_index[i])
         
         return tokens
+
+
+    def normalize_multiform_words(self,token):
+        token = token.replace("ایینه","اینه")
+        token = token.replace("اتوموبیل","اتومبیل")
+        token = token.replace("ملیون","میلیون")
+        token = token.replace("هیات","هییت")
+        token = token.replace("درم","درهم")
+        token = token.replace("طهران","تهران")
+        token = token.replace("باطری","باتری")
+        token = token.replace("ذغال","زغال")
+        token = token.replace("اطاق","اتاق")
+        token = token.replace("امپراطور","امپراتور")
+        return token
+
