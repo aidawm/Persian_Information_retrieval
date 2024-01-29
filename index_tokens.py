@@ -63,24 +63,28 @@ class Indexer:
         return tokens
 
     def tokenize_docs(self):
-            data_address = "IR_data_news_12k.json"
+            data_address = "IR_data_news_5k 2.json"
             f = open(data_address)
             json_file = json.load(f)
             self.doc_numbers = len(json_file)
+
             # self.doc_numbers = 10
-
-            for i in range(self.doc_numbers):
-                if i%1000 == 1: 
-                    print (f"process doc {i}\n")
+            docs_collections = list(json_file.keys())
+            docs_collections.sort()
+            cnt = 0 
+            for i in docs_collections:
+                if cnt%1000 == 1: 
+                    print (f"process {cnt} docs\n")
+                cnt+=1
             
-                text = json_file[str(i)]["content"]
+                text = json_file[i]["content"]
 
                 
-                
+    
                 if (self.save_most_frequent_words):
                     tokens = self.tokenize_text(text,True)
                     self.freq_term.count_terms(tokens)
-                    self.doc_tocken_list[str(i)]= tokens
+                    self.doc_tocken_list[i]= tokens
 
                 else: 
                     tokens = self.tokenize_text(text)
@@ -91,7 +95,7 @@ class Indexer:
             if(self.save_most_frequent_words):
                 self.freq_term.find_most_freq_terms()
                 self.get_eliminate_words()
-                for i in range(self.doc_numbers):
+                for i in docs_collections:
                     tokens = [ t for t in self.doc_tocken_list[str(i)] if not (t in self.eliminated_words or t == "")]
                     self.create_posting_list(tokens,str(i))
                     del self.doc_tocken_list[str(i)]

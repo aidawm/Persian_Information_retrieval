@@ -80,7 +80,7 @@ class IR:
         
         sorted_docs = sorted(docs_score.items(), key=lambda x:x[1], reverse=True)[:10]
         best_docs = dict(sorted_docs)
-        data_address = "IR_data_news_12k.json"
+        data_address = "IR_data_news_5k 2.json"
         f = open(data_address)
         json_file = json.load(f)
 
