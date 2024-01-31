@@ -63,7 +63,7 @@ class Indexer:
         return tokens
 
     def tokenize_docs(self):
-            data_address = "IR_data_news_5k 2.json"
+            data_address = "IR_data_news_12k.json"
             f = open(data_address)
             json_file = json.load(f)
             self.doc_numbers = len(json_file)

@@ -7,7 +7,7 @@ import math
 class IR: 
     def __init__(self,en_champion_list) -> None:
         self.enable_champion_list = en_champion_list
-        data_address = "IR_data_news_5k 2.json"
+        data_address = "IR_data_news_12k.json"
         f = open(data_address)
         self.json_file = json.load(f)
 
@@ -16,7 +16,7 @@ class IR:
         self.indexer.tokenize_docs()
         self.IR_dictionary = self.indexer.get_indexes()
         if self.enable_champion_list :
-            self.indexer.generate_champion_list(20)
+            self.indexer.generate_champion_list(10)
             self.champion_list= self.indexer.get_champion_list()
         
         # print(self.IR_dictionary["ساعت"])
@@ -44,11 +44,12 @@ class IR:
 
     def find_suitable_docs(self,tokens):
         docs_dict = dict()
-        for t in tokens:
-                for d in self.champion_list[t]:
-                    if not d in docs_dict.keys():
-                        docs_dict[d] = dict()
-                    docs_dict[d][t] = float(self.champion_list[t][d])
+        if self.enable_champion_list:
+            for t in tokens:
+                    for d in self.champion_list[t]:
+                        if not d in docs_dict.keys():
+                            docs_dict[d] = dict()
+                        docs_dict[d][t] = float(self.champion_list[t][d])
         else:
             for t in tokens:
                 for d in self.IR_dictionary[t]["docs"].keys():
@@ -108,8 +109,8 @@ if __name__ == '__main__':
     # start_time = time.time()
     
     ir = IR(True)
-    # ir.index_tokens()
-    ir.load_dictionary()
+    ir.index_tokens()
+    # ir.load_dictionary()
     # ir.save_dictionary()
 
     ir.get_queries()
